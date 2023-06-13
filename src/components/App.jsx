@@ -1,16 +1,84 @@
-export const App = () => {
-  return (
-    <div
-      style={{
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontSize: 40,
-        color: '#010101'
-      }}
-    >
-      React homework template
-    </div>
-  );
-};
+import { Component } from 'react';
+import { Section } from './Section/Section';
+import { FeedbackOptions } from './FeedbackOptions/FeedbackOptions';
+import { Statistics } from './Statisctics/Statisctis';
+import { Notification } from './Notifaction/Notification';
+import css from './App.module.css';
+
+export class App extends Component {
+  state = {
+    good: 0,
+    neutral: 0,
+    bad: 0,
+  };
+
+  // оновлення стану компонента
+  updateState = nameFeedback => {
+    // отримання старого стану компонента oldData
+    this.setState(oldData => {
+      let obj = { ...oldData }; // Створення копії старого стану через ...спред-оператор.
+
+      // Створення нового об'єкта obj з оновленим значенням ключа, що збільшується на одиницю.
+      obj[nameFeedback] = oldData[nameFeedback] + 1;
+
+      return obj; //повернення obj з методу, що призведе до оновлення стану компонента
+    });
+  };
+
+  // підрахунок загальної кількості відгуків
+  countTotalFeedback = () => {
+    return this.state.good + this.state.neutral + this.state.bad;
+  };
+
+  // підрахунок відсотка позитивних відгуків
+  countPositiveFeedbackPercentage = () => {
+    // Підрахунок за формулою: (good / (good + neutral + bad)) * 100.
+    // Округлення в (меншу сторону) до цілого числа за допомогою Math.floor()
+    return Math.floor(
+      (this.state.good /
+        (this.state.good + this.state.neutral + this.state.bad)) *
+        100 || 0 //Якщо загальна кількість відгуків дорівнює нулю, повертається 0.
+    );
+  };
+
+  render() {
+    return (
+      <div className={css.container}>
+        <Section title="Please Leave feedback">
+          <FeedbackOptions
+
+            // Пропс options є масивом, який містить ключі зі стану
+            // компонента, які відповідають за відгуки, які можна залишити.
+            options={Object.keys(this.state)}
+
+            // Пропс onLeaveFeedback є функцією, яка
+            // виконується при кліку на елементи відгуків.
+            onLeavefeedback={this.updateState}
+          />
+        </Section>
+
+        <Section title="Statistics">
+          {/* Рендер за умовою */}
+          {this.countTotalFeedback() === 0 ? (
+            <Notification message="There is no feedback yet..." />
+          ) : (
+            <Statistics
+
+              
+              options={Object.keys(this.state)}
+
+              
+              statistic={this.state}
+
+              
+              total={this.countTotalFeedback()}
+
+              
+              positivePercentage={this.countPositiveFeedbackPercentage}
+            />
+          )}
+        </Section>
+      </div>
+    );
+  }
+}

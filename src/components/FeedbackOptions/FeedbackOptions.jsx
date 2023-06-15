@@ -23,6 +23,7 @@ export const FeedbackOptions = ({ onLeavefeedback, options }) => {
   );
 };
 
+// PropTypes
 FeedbackOptions.propTypes = {
   onLeavefeedback: PropTypes.func.isRequired,
   options: PropTypes.arrayOf(PropTypes.oneOf(['good', 'neutral', 'bad']))
